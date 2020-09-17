@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Chatアプリ</title>
+</head>
+<body>
+
+<!-- コンテンツ表示画面 -->
+
+<div>
+   
+    <ol>
+      <li class="imgs" data-img="0"><img src="imgs/buke.png" width="100"> </li>
+      <li class="imgs" data-img="1"><img src="imgs/tuku.jpg" width="100"> </li>
+      <li class="imgs" data-img="2"><img src="imgs/caram.png" width="100"> </li>
+    </ol>
+    <div>名前: <input type="text" id="uname"> </div>
+    <div> 
+        <textarea id="text" cols="30" rows="10"></textarea>
+        <button id="send">送信</button>
+    </div>
+    <div id="output" style="height:300px; overflow:auto; border:1px solid red;"></div>
+</div>
+
+
+
+
+
+<!--/ コンテンツ表示画面 -->
+
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+<!--** 以下Firebase **-->
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+  // Your web app's Firebase configuration
+  
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const ref = firebase.database().ref(); //.ref()=ユニークキーを自動で振ってください
+
+
+//関数定義
+
+
+
+let d=0;
+const uname = ""
+    const img=["buke.png","tuku.jpg","caram.png"];
+    $(".imgs").on("click",function(){
+      d=$(this).attr("data-img");
+      if(d==0){
+        
+        $("#uname").val("猫");
+      }if(d==1){
+        
+        $("#uname").val("ペンギン");
+      }if(d==2){
+        
+        $("#uname").val("犬");
+      }
+    });
+
+
+function send(){
+    const uname = $("#uname").val();
+    
+    const date1 = new Date();
+    const time =
+          date1.getFullYear() +
+          '年'+
+          (date1.getMonth() + 1) +
+          '月' +
+          date1.getDate() +
+          '日' +
+          date1.getHours() +
+          '時' +
+          date1.getMinutes() +
+          '分';
+
+
+    const text = $("#text").val();
+
+  
+
+    const msg = {
+      uname:uname,
+      time:time,
+      text:text,
+      icon:d
+    }
+    ref.push(msg); //set=決まった名前。push=ユニーク
+   
+
+    $('#output').scrollTop($('#output')[0].scrollHeight);
+}
+
+
+
+
+
+
+//  文字を送信
+
+$("#send").on("click",function(){
+  send();
+});
+
+// 受信処理
+ref.on('child_added', function (data) {
+        const v = data.val(); //送信されたオブジェクトを取得
+        const k = data.key; //ユニークキーの取得
+        const h = '<dl id="'+k+'"><dt><img src="imgs/'+img[v.icon]+'" width="50"><br>'+v.uname+'</dt><dd>'+v.text+'</dd><dd>'+v.time+'</dd></dl>';
+        $('#output').append(h);
+      });
+
+//イベント情報取得 enentのe!!なんでもよい
+$('#text').on('keydown', function (e) {
+        if (e.keyCode == 13) {
+          send();
+        }
+      });
+
+//クリックした場所がわかる（おもしろい）
+// $("body").on("click",function(e){
+//     console.log(e);
+// })
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
